@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Tarefa - Sistema de Controle de Projetos{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2>Editar Tarefa</h2>
+        <p style="color: #7f8c8d;">Projeto: <strong>{{ project.name }}</strong></p>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="title">Título:</label>
+                <input type="text" id="title" name="title" value="{{ task.title }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Descrição:</label>
+                <textarea id="description" name="description">{{ task.description or '' }}</textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="status">
+                        <option value="pendente" {% if task.status == 'pendente' %}selected{% endif %}>Pendente</option>
+                        <option value="em_progresso" {% if task.status == 'em_progresso' %}selected{% endif %}>Em Progresso</option>
+                        <option value="concluída" {% if task.status == 'concluída' %}selected{% endif %}>Concluída</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="priority">Prioridade:</label>
+                    <select id="priority" name="priority">
+                        <option value="baixa" {% if task.priority == 'baixa' %}selected{% endif %}>Baixa</option>
+                        <option value="média" {% if task.priority == 'média' %}selected{% endif %}>Média</option>
+                        <option value="alta" {% if task.priority == 'alta' %}selected{% endif %}>Alta</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="assigned_to_id">Atribuir a:</label>
+                <select id="assigned_to_id" name="assigned_to_id">
+                    <option value="">Ninguém</option>
+                    {% for member in team_members %}
+                    <option value="{{ member.id }}" {% if task.assigned_to_id == member.id %}selected{% endif %}>{{ member.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="due_date">Data Limite:</label>
+                <input type="date" id="due_date" name="due_date" value="{% if task.due_date %}{{ task.due_date.strftime('%Y-%m-%d') }}{% endif %}">
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-success">Salvar Alterações</button>
+                <a href="{{ url_for('view_project', project_id=project.id) }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
