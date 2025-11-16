@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Novo Projeto - Sistema de Controle de Projetos{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <div class="card">
+        <h2>Criar Novo Projeto</h2>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Nome do Projeto:</label>
+                <input type="text" id="name" name="name" required placeholder="Ex: Sistema de Vendas">
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Descrição:</label>
+                <textarea id="description" name="description" placeholder="Descreva o objetivo do projeto..."></textarea>
+            </div>
+            
+            <div style="display: flex; gap: 1rem;">
+                <button type="submit" class="btn btn-success">Criar Projeto</button>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

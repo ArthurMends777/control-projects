@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block title %}{{ project.name }} - Sistema de Controle de Projetos{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+            <h2>{{ project.name }}</h2>
+            <p style="color: #7f8c8d;">{{ project.description }}</p>
+            <p style="font-size: 0.9rem; color: #95a5a6;">
+                <strong>Status:</strong> {{ project.status }} | 
+                <strong>Criado em:</strong> {{ project.created_at.strftime('%d/%m/%Y') }}
+            </p>
+        </div>
+        <div>
+            <a href="{{ url_for('edit_project', project_id=project.id) }}" class="btn btn-secondary">Editar</a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+</div>
+
+<!-- Seção de Membros da Equipe -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Membros da Equipe ({{ project.team_members|length }})</h3>
+        <a href="{{ url_for('create_team_member', project_id=project.id) }}" class="btn btn-success">+ Adicionar Membro</a>
+    </div>
+    
+    {% if project.team_members %}
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Função</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in project.team_members %}
+            <tr>
+                <td>{{ member.name }}</td>
+                <td>{{ member.email }}</td>
+                <td>{{ member.role }}</td>
+                <td>
+                    <div class="actions">
+                        <a href="{{ url_for('edit_team_member', member_id=member.id) }}" class="btn btn-secondary">Editar</a>
+                        <form method="POST" action="{{ url_for('delete_team_member', member_id=member.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja remover este membro?');">
+                            <button type="submit" class="btn btn-danger">Remover</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #7f8c8d; margin-top: 1rem;">Nenhum membro adicionado ainda.</p>
+    {% endif %}
+</div>
+
+<!-- Seção de Tarefas -->
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3>Tarefas ({{ project.tasks|length }})</h3>
+        <a href="{{ url_for('create_task', project_id=project.id) }}" class="btn btn-success">+ Nova Tarefa</a>
+    </div>
+    
+    {% if project.tasks %}
+    <table>
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Status</th>
+                <th>Prioridade</th>
+                <th>Atribuído a</th>
+                <th>Data Limite</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in project.tasks %}
+            <tr>
+                <td>{{ task.title }}</td>
+                <td>
+                    <span style="background-color: 
+                        {% if task.status == 'pendente' %}#fff3cd
+                        {% elif task.status == 'em_progresso' %}#cfe2ff
+                        {% else %}#d4edda
+                        {% endif %};
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 3px;">
+                        {{ task.status }}
+                    </span>
+                </td>
+                <td>
+                    <span style="background-color: 
+                        {% if task.priority == 'alta' %}#f8d7da
+                        {% elif task.priority == 'média' %}#fff3cd
+                        {% else %}#d1ecf1
+                        {% endif %};
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 3px;">
+                        {{ task.priority }}
+                    </span>
+                </td>
+                <td>{{ task.assigned_to.name if task.assigned_to else '-' }}</td>
+                <td>{{ task.due_date.strftime('%d/%m/%Y') if task.due_date else '-' }}</td>
+                <td>
+                    <div class="actions">
+                        <a href="{{ url_for('edit_task', task_id=task.id) }}" class="btn btn-secondary">Editar</a>
+                        <form method="POST" action="{{ url_for('delete_task', task_id=task.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar esta tarefa?');">
+                            <button type="submit" class="btn btn-danger">Deletar</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color: #7f8c8d; margin-top: 1rem;">Nenhuma tarefa criada ainda.</p>
+    {% endif %}
+</div>
+{% endblock %}
