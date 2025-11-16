@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sistema de Controle de Projetos{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Meus Projetos</h2>
+        <a href="{{ url_for('create_project') }}" class="btn btn-success">+ Novo Projeto</a>
+    </div>
+</div>
+
+{% if user.projects %}
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        {% for project in user.projects %}
+        <div class="card">
+            <h3>{{ project.name }}</h3>
+            <p style="color: #7f8c8d; margin-bottom: 0.5rem;">
+                <strong>Status:</strong> 
+                <span style="background-color: 
+                    {% if project.status == 'ativo' %}#d4edda
+                    {% elif project.status == 'concluído' %}#cfe2ff
+                    {% else %}#fff3cd
+                    {% endif %};
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 3px;">
+                    {{ project.status }}
+                </span>
+            </p>
+            {% if project.description %}
+            <p style="color: #7f8c8d; margin-bottom: 1rem;">{{ project.description[:100] }}...</p>
+            {% endif %}
+            <p style="font-size: 0.9rem; color: #95a5a6;">
+                Membros: {{ project.team_members|length }} | Tarefas: {{ project.tasks|length }}
+            </p>
+            <div class="actions" style="margin-top: 1rem;">
+                <a href="{{ url_for('view_project', project_id=project.id) }}" class="btn">Visualizar</a>
+                <a href="{{ url_for('edit_project', project_id=project.id) }}" class="btn btn-secondary">Editar</a>
+                <form method="POST" action="{{ url_for('delete_project', project_id=project.id) }}" style="display: inline;" onsubmit="return confirm('Tem certeza que deseja deletar este projeto?');">
+                    <button type="submit" class="btn btn-danger">Deletar</button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="card" style="text-align: center;">
+        <p style="color: #7f8c8d; font-size: 1.1rem;">Você não tem projetos ainda.</p>
+        <a href="{{ url_for('create_project') }}" class="btn btn-success" style="margin-top: 1rem;">Criar Primeiro Projeto</a>
+    </div>
+{% endif %}
+{% endblock %}
